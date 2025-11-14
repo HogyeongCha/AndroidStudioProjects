@@ -1,0 +1,20 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.GPSBasedAttendanceApp" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">#C7C7C7</item>
+        <item name="colorOnPrimary">@color/design_default_color_on_primary</item>
+        <item name="colorSecondary">#737373</item>
+        <item name="colorOnSecondary">@color/design_default_color_on_secondary</item>
+        <item name="android:colorBackground">@color/design_default_color_background</item>
+        <item name="colorSurface">@color/design_default_color_surface</item>
+        <item name="colorOnSurface">@color/design_default_color_on_surface</item>
+    </style>
+
+    <style name="Theme.GPSBasedAttendanceApp" parent="Base.Theme.GPSBasedAttendanceApp" />
+
+    <style name="GrayButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">@color/gray</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+</resources>

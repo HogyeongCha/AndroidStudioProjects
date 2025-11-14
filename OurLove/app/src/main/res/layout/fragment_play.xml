@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  '경경이' 앱의 "Part 2: 같이 놀기" 화면 레이아웃입니다.
+  ScrollView를 사용하여 Q&A, 월말 편지, 궁합 테스트 기능을 카드 형태로 배치합니다.
+-->
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F9F9F9"
+    tools:context=".PlayFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp">
+
+        <!-- 1. 오늘의 Q&A -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_qa"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/white"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <TextView
+                    android:id="@+id/tv_qa_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="오늘의 Q&amp;A 💬"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="#333333"/>
+
+                <TextView
+                    android:id="@+id/tv_qa_question"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Q. 우리에게 가장 소중한 추억은 무엇인가요?"
+                    android:textSize="16sp"
+                    android:textColor="#555555"
+                    android:minLines="2"
+                    android:gravity="center_vertical"/>
+
+                <TextView
+                    android:id="@+id/tv_qa_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="상대방의 답변을 기다리는 중..."
+                    android:textSize="14sp"
+                    android:textColor="#D81B60"/>
+
+                <Button
+                    android:id="@+id/btn_qa_answer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="답변하러 가기"
+                    android:backgroundTint="#FFECEF"
+                    android:textColor="#D81B60"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- 2. 월말 편지 -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_letter"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="3dp"
+            app:cardBackgroundColor="#FFFFF0"
+            app:layout_constraintTop_toBottomOf="@id/card_qa"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="월말 편지 💌"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="#6D4C41"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="이번 달, 서로에게 진심을 전해보세요. 주고받은 편지는 '우리의 우체통'에 보관됩니다."
+                    android:textSize="15sp"
+                    android:textColor="#795548"/>
+
+                <Button
+                    android:id="@+id/btn_letter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="편지 쓰러 가기 (D-3)"
+                    android:backgroundTint="#FFF8E1"
+                    android:textColor="#A1887F"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- 3. 애정 궁합 테스트 -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_compatibility"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="3dp"
+            app:cardBackgroundColor="#E3F2FD"
+            app:layout_constraintTop_toBottomOf="@id/card_letter"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="오늘의 애정 궁합 💕"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="#0D47A1"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="간단한 심리 테스트로 알아보는 우리의 궁합 지수!"
+                    android:textSize="15sp"
+                    android:textColor="#1565C0"/>
+
+                <Button
+                    android:id="@+id/btn_compatibility"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="테스트 시작하기"
+                    android:backgroundTint="#BBDEFB"
+                    android:textColor="#0D47A1"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

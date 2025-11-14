@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1024141726455",
+    "project_id": "carbonfootprintapp-fc1bb",
+    "storage_bucket": "carbonfootprintapp-fc1bb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1024141726455:android:f3ecc5b4230653ee13f9f2",
+        "android_client_info": {
+          "package_name": "com.example.carbonfootprint"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBzNNx1erSYfSVJvh9O1ucSVPaQCQV4Z7s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

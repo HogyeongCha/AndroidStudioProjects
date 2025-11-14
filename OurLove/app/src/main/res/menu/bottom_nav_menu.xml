@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  '경경이' 앱의 하단 네비게이션 바 메뉴 구성 파일입니다.
+  res/menu/ 폴더에 저장하세요.
+-->
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/navigation_home"
+        android:icon="@drawable/ic_home"
+        android:title="홈"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/navigation_play"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:title="같이 놀기"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/navigation_memories"
+        android:icon="@android:drawable/ic_menu_gallery"
+        android:title="우리의 추억"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/navigation_analysis"
+        android:icon="@android:drawable/ic_menu_sort_by_size"
+        android:title="AI 분석실"
+        app:showAsAction="ifRoom"/>
+
+</menu>

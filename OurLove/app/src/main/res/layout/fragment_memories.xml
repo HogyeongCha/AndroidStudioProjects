@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  '경경이' 앱의 "Part 3: 우리의 추억" 화면 레이아웃입니다.
+  앨범, 데이트 지도, 맛집 리스트로 연결되는 메뉴를 제공합니다.
+-->
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F9F9F9"
+    tools:context=".MemoriesFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp">
+
+        <!-- 1. 커플 앨범 -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_album"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/white"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <TextView
+                    android:id="@+id/tv_album_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="커플 앨범 📸"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="#333333"/>
+
+                <TextView
+                    android:id="@+id/tv_album_desc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="날짜별/폴더별로 우리의 추억을 정리해요. 사진과 함께 코멘트도 남길 수 있어요."
+                    android:textSize="15sp"
+                    android:textColor="#555555"/>
+
+                <!-- 최근 사진 미리보기 (자리 표시자) -->
+                <ImageView
+                    android:id="@+id/iv_album_preview"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:layout_marginTop="16dp"
+                    android:background="#EEEEEE"
+                    android:src="@android:drawable/ic_menu_gallery"
+                    android:scaleType="centerCrop"
+                    android:contentDescription="최근 앨범 사진 미리보기"/>
+
+                <Button
+                    android:id="@+id/btn_album_go"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="앨범 보러가기"
+                    android:backgroundTint="#FFECEF"
+                    android:textColor="#D81B60"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- 2. 데이트 지도 (맵뷰) -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_map"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="3dp"
+            app:cardBackgroundColor="#E3F2FD"
+            app:layout_constraintTop_toBottomOf="@id/card_album"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="데이트 지도 🗺️"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="#0D47A1"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="데이트 기록에 장소를 태그하면, 지도 위에 우리가 다녀온 곳들이 핀으로 표시됩니다."
+                    android:textSize="15sp"
+                    android:textColor="#1565C0"/>
+
+                <!-- 지도 미리보기 (자리 표시자 이미지) -->
+                <ImageView
+                    android:id="@+id/iv_map_preview"
+                    android:layout_width="match_parent"
+                    android:layout_height="130dp"
+                    android:layout_marginTop="16dp"
+                    android:background="#CFD8DC"
+                    android:src="@android:drawable/ic_dialog_map"
+                    android:scaleType="center"
+                    android:contentDescription="지도 미리보기"/>
+
+                <Button
+                    android:id="@+id/btn_map_go"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="지도 펼치기"
+                    android:backgroundTint="#BBDEFB"
+                    android:textColor="#0D47A1"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- 3. 맛집 리스트 -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_food"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="3dp"
+            app:cardBackgroundColor="#F1F8E9"
+            app:layout_constraintTop_toBottomOf="@id/card_map"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="우리의 맛집 🍽️"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="#33691E"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="방문한 맛집의 별점, 사진, 후기를 기록하고 #인생맛집 태그로 관리해보세요."
+                    android:textSize="15sp"
+                    android:textColor="#558B2F"/>
+
+                <Button
+                    android:id="@+id/btn_food_go"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="맛집 리스트 보기"
+                    android:backgroundTint="#DCEDC8"
+                    android:textColor="#33691E"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

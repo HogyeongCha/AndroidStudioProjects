@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ '동일 카테고리 평균 비교' 등급을 시각적으로 보여주기 위한 커스텀 ProgressBar 스타일입니다.
+ LayerList를 사용하여 배경과 진행 상태를 각각 정의합니다.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- ProgressBar의 배경 부분 -->
+    <item android:id="@android:id/background">
+        <shape android:shape="rectangle">
+            <!-- 배경 색상 (연한 회색) -->
+            <solid android:color="#E0E0E0" />
+            <!-- 모서리를 둥글게 처리하여 부드러운 느낌을 줍니다. -->
+            <corners android:radius="8dp" />
+        </shape>
+    </item>
+
+    <!-- ProgressBar의 진행 상태(progress) 부분 -->
+    <item android:id="@android:id/progress">
+        <!-- Clip Drawable을 사용하여 진행도에 따라 채워지는 효과를 구현합니다. -->
+        <clip>
+            <shape android:shape="rectangle">
+                <!-- 진행 상태 색상 (앱의 메인 컬러 또는 긍정적인 느낌의 색상) -->
+                <solid android:color="#4CAF50" />
+                <corners android:radius="8dp" />
+            </shape>
+        </clip>
+    </item>
+
+</layer-list>

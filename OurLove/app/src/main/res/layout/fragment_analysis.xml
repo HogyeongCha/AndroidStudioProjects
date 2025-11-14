@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  '경경이' 앱의 "Part 4: AI 경경이의 분석실" 화면 레이아웃입니다.
+  월간 리포트, 맞춤 추천, AI 상담소 메뉴를 제공합니다.
+-->
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F9F9F9"
+    tools:context=".AnalysisFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp">
+
+        <!-- 1. 연애 스타일 리포트 -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_report"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/white"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <TextView
+                    android:id="@+id/tv_report_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="월간 연애 리포트 📊"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="#333333"/>
+
+                <TextView
+                    android:id="@+id/tv_report_desc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Q&amp;A 답변, 데이트 기록을 분석해 '탐험가형 커플'처럼 두 분의 연애 유형을 알려드려요."
+                    android:textSize="15sp"
+                    android:textColor="#555555"/>
+
+                <!-- 리포트 미리보기 (그래프 자리 표시자) -->
+                <ImageView
+                    android:id="@+id/iv_report_preview"
+                    android:layout_width="match_parent"
+                    android:layout_height="130dp"
+                    android:layout_marginTop="16dp"
+                    android:background="#EEEEEE"
+                    android:src="@android:drawable/ic_menu_sort_by_size"
+                    android:scaleType="center"
+                    android:contentDescription="월간 리포트 미리보기"/>
+
+                <Button
+                    android:id="@+id/btn_report_go"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="이번 달 리포트 확인하기"
+                    android:backgroundTint="#FFECEF"
+                    android:textColor="#D81B60"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- 2. 맞춤 데이트 코스 추천 -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_recommend"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="3dp"
+            app:cardBackgroundColor="#E3F2FD"
+            app:layout_constraintTop_toBottomOf="@id/card_report"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="경경이의 맞춤 추천 📍"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="#0D47A1"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="&quot;최근 파스타를 자주 드셨네요, 이번엔 한식 맛집 어떠세요?&quot; 처럼 개인화된 장소를 추천해 드려요."
+                    android:textSize="15sp"
+                    android:textColor="#1565C0"
+                    android:lineSpacingMultiplier="1.2"/>
+
+                <Button
+                    android:id="@+id/btn_recommend_go"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="데이트 코스 추천받기"
+                    android:backgroundTint="#BBDEFB"
+                    android:textColor="#0D47A1"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- 3. AI 연애 상담소 -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_counseling"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="3dp"
+            app:cardBackgroundColor="#FFF8E1"
+            app:layout_constraintTop_toBottomOf="@id/card_recommend"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="AI 연애 상담소 '경경이에게 말해봐' 💬"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="#6D4C41"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="요즘 고민이 있나요? AI 경경이가 두 사람의 데이터를 분석해 객관적인 조언과 행동을 제안해 드립니다."
+                    android:textSize="15sp"
+                    android:textColor="#795548"
+                    android:lineSpacingMultiplier="1.2"/>
+
+                <Button
+                    android:id="@+id/btn_counseling_go"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="상담 시작하기"
+                    android:backgroundTint="#FFECB3"
+                    android:textColor="#6D4C41"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
