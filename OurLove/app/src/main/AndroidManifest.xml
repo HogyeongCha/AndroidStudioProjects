@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -11,15 +13,26 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Love">
+
+        <!-- LoginActivity를 시작 액티비티로 설정 -->
         <activity
-            android:name=".MainActivity"
+            android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- SignupActivity 등록 -->
+        <activity android:name=".SignupActivity" />
+
+        <!-- CoupleConnectActivity 등록 -->
+        <activity android:name=".CoupleConnectActivity" />
+
+        <!-- MainActivity는 이제 일반 액티비티로 로그인/커플 연결 후 진입 -->
+        <activity android:name=".MainActivity" />
+
     </application>
 
 </manifest>
