@@ -1,26 +1,35 @@
 package com.hyu_tech_academic_fest_25.straightup;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-// [Phase 1 추가] ViewModelProvider import
 import androidx.lifecycle.ViewModelProvider;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 
 public class SettingsFragment extends Fragment {
 
-    // [Phase 1 추가] ViewModel 선언
     private SettingsViewModel settingsViewModel;
+
+    private RadioGroup rgAlertMethod;
+    private EditText etCaptureInterval;
+    private SwitchMaterial switchNanoBanana;
+    private Spinner spinnerDataRetention;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // XML 레이아웃 인플레이트
         return inflater.inflate(R.layout.fragment_settings, container, false);
     }
 
@@ -28,29 +37,90 @@ public class SettingsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // [Phase 1 추가] ViewModel 초기화
         settingsViewModel = new ViewModelProvider(this).get(SettingsViewModel.class);
 
-        // 데이터 보존 기간 Spinner 설정
-        Spinner retentionSpinner = view.findViewById(R.id.spinnerDataRetention);
+        // View Binding
+        rgAlertMethod = view.findViewById(R.id.rgAlertMethod);
+        etCaptureInterval = view.findViewById(R.id.etCaptureInterval);
+        switchNanoBanana = view.findViewById(R.id.switchNanoBanana);
+        spinnerDataRetention = view.findViewById(R.id.spinnerDataRetention);
 
-        // strings.xml에 정의된 string-array를 사용하여 어댑터 생성
+        setupRetentionSpinner();
+        setupListeners();
+        observeViewModel();
+    }
+
+    private void setupRetentionSpinner() {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 getContext(),
                 R.array.data_retention_options,
                 android.R.layout.simple_spinner_item
         );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerDataRetention.setAdapter(adapter);
+    }
 
-        // 스피너에 어댑터 적용
-        retentionSpinner.setAdapter(adapter);
+    private void setupListeners() {
+        // 알림 방식 변경
+        rgAlertMethod.setOnCheckedChangeListener((group, checkedId) -> {
+            String method = "none";
+            if (checkedId == R.id.rbToast) method = "toast";
+            else if (checkedId == R.id.rbTts) method = "tts";
+            settingsViewModel.setAlertMethod(method);
+        });
 
-        // 기본값 '1개월'로 설정 (배열의 1번 인덱스)
-        retentionSpinner.setSelection(1);
+        // 캡처 간격 변경 (입력 완료 시 저장하도록 포커스 변경 감지 또는 TextWatcher 사용)
+        etCaptureInterval.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(Editable s) {
+                try {
+                    int seconds = Integer.parseInt(s.toString());
+                    settingsViewModel.setCaptureInterval(seconds);
+                } catch (NumberFormatException e) {
+                    // 무시
+                }
+            }
+        });
 
-        // [Phase 6에서 구현]
-        // - RadioGroup, EditText, Switch 등의 리스너 설정
-        // - 리스너 내부에서 settingsViewModel의 set...() 메서드 호출
-        // - ViewModel의 LiveData를 observe하여 Spinner 등의 초기값 설정
+        // Nano-Banana 스위치
+        switchNanoBanana.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            settingsViewModel.setNanoBananaEnabled(isChecked);
+        });
+
+        // 데이터 보존 기간
+        spinnerDataRetention.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                settingsViewModel.setRetentionPeriodIndex(position);
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+    }
+
+    private void observeViewModel() {
+        settingsViewModel.getAlertMethod().observe(getViewLifecycleOwner(), method -> {
+            if (method.equals("toast")) rgAlertMethod.check(R.id.rbToast);
+            else if (method.equals("tts")) rgAlertMethod.check(R.id.rbTts);
+            else rgAlertMethod.check(R.id.rbNone);
+        });
+
+        settingsViewModel.getCaptureInterval().observe(getViewLifecycleOwner(), interval -> {
+            if (!etCaptureInterval.getText().toString().equals(String.valueOf(interval))) {
+                etCaptureInterval.setText(String.valueOf(interval));
+            }
+        });
+
+        settingsViewModel.getIsNanoBananaEnabled().observe(getViewLifecycleOwner(), isEnabled -> {
+            switchNanoBanana.setChecked(isEnabled);
+        });
+
+        settingsViewModel.getRetentionPeriodIndex().observe(getViewLifecycleOwner(), index -> {
+            spinnerDataRetention.setSelection(index);
+        });
     }
 }

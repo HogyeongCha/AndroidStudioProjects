@@ -1,5 +1,6 @@
 package com.hyu_tech_academic_fest_25.straightup;
 
+import android.content.res.ColorStateList; // [수정] import 추가
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-// [Phase 1 추가] ViewModelProvider import
 import androidx.lifecycle.ViewModelProvider;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -23,7 +23,6 @@ import java.util.ArrayList;
 
 public class DashboardFragment extends Fragment {
 
-    // [Phase 1 추가] ViewModel 선언
     private DashboardViewModel dashboardViewModel;
 
     private LineChart lineChart;
@@ -42,8 +41,7 @@ public class DashboardFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // [Phase 1 추가] ViewModel 초기화
-        // 'this' (Fragment)를 ViewModelStoreOwner로 전달
+        // ViewModel 초기화
         dashboardViewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
 
         // 뷰 초기화
@@ -53,20 +51,12 @@ public class DashboardFragment extends Fragment {
         tvStatusCircle = view.findViewById(R.id.tvStatusCircle);
         tvStatusLabel = view.findViewById(R.id.tvStatusLabel);
 
-
         setupChart();
         setupTabLayout();
 
-        // [Phase 1 수정] ViewModel의 LiveData 구독
         observeViewModel();
-
-        // (초기 데이터 로드는 ViewModel의 생성자에서 처리됨)
     }
 
-    /**
-     * [Phase 1 추가]
-     * ViewModel의 LiveData를 관찰(observe)하여 UI를 업데이트합니다.
-     */
     private void observeViewModel() {
         // 1. 차트 데이터 관찰
         dashboardViewModel.getChartData().observe(getViewLifecycleOwner(), lineData -> {
@@ -120,7 +110,6 @@ public class DashboardFragment extends Fragment {
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                // [Phase 1 수정] 선택된 탭에 따라 ViewModel의 메서드 호출
                 if (tab.getPosition() == 0) {
                     dashboardViewModel.loadChartDataForPeriod("today");
                 } else if (tab.getPosition() == 1) {
@@ -131,37 +120,29 @@ public class DashboardFragment extends Fragment {
             }
 
             @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-                // Not used
-            }
+            public void onTabUnselected(TabLayout.Tab tab) { }
 
             @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-                // Not used
-            }
+            public void onTabReselected(TabLayout.Tab tab) { }
         });
     }
 
-    // [Phase 1 삭제] loadChartDataForPeriod 메서드 (ViewModel으로 이동)
-    // private void loadChartDataForPeriod(String period) { ... }
-
     /**
-     * [Phase 1 수정]
      * CVA 값에 따라 UI를 업데이트하는 메서드
-     * (로직은 ViewModel로 이동, 이 메서드는 순수하게 UI만 설정)
-     * @param info ViewModel에서 계산된 UI 상태 정보
      */
     private void updateCvaDisplayUI(CvaDisplayInfo info) {
         tvCvaValue.setText(info.cvaText);
-        tvCvaValue.setTextColor(info.cvaValueColor);
+        tvCvaValue.setTextColor(info.cvaValueColor); // 이건 원래 Color Int를 받으므로 정상
 
-        tvStatusCircle.setBackgroundTintList(ContextCompat.getColorStateList(getContext(), info.statusCircleBgColor));
+        // [수정 핵심] info.statusCircleBgColor는 이미 '색상값(Int)'입니다.
+        // ContextCompat.getColorStateList는 '리소스 ID'를 원하므로 여기서 에러가 났습니다.
+        // ColorStateList.valueOf()를 사용하여 색상값으로 바로 StateList를 만듭니다.
+        tvStatusCircle.setBackgroundTintList(ColorStateList.valueOf(info.statusCircleBgColor));
+
         tvStatusCircle.setTextColor(info.statusTextColor);
         tvStatusCircle.setText(info.statusText);
 
         tvStatusLabel.setText(info.statusLabelText);
         tvStatusLabel.setTextColor(ContextCompat.getColor(getContext(), android.R.color.darker_gray));
     }
-
-    // [Phase 1 삭제] updateCvaDisplay(float cvaValue) 메서드 (로직이 ViewModel로 이동)
 }
