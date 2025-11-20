@@ -42,7 +42,7 @@ public class DashboardFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // ViewModel 초기화
-        dashboardViewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
+        dashboardViewModel = new ViewModelProvider(requireActivity()).get(DashboardViewModel.class);
 
         // 뷰 초기화
         lineChart = view.findViewById(R.id.lineChart);
