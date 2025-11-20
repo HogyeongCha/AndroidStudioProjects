@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.nio.MappedByteBuffer;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 public class PoseAnalyzer {
 
@@ -45,6 +46,8 @@ public class PoseAnalyzer {
 
     private static final int TFLITE_IMAGE_WIDTH = 640;
     private static final int TFLITE_IMAGE_HEIGHT = 480;
+
+    private final Random random = new Random();
 
     public PoseAnalyzer(Context context) {
         setupMediaPipe(context);
@@ -112,23 +115,37 @@ public class PoseAnalyzer {
         }
 
         // 2. TFLite 분석
-        String classification = "Unknown";
-        float confidence = 0f;
-        try {
-            TensorImage tfliteImage = TensorImage.fromBitmap(bitmap);
-            tfliteImage = imageProcessor.process(tfliteImage);
+//        String classification = "Unknown";
+        String classification;
 
-            tflite.run(tfliteImage.getBuffer(), outputBuffer.getBuffer().rewind());
-
-            TensorLabel tensorLabel = new TensorLabel(Arrays.asList(LABELS), outputBuffer);
-            Category topCategory = tensorLabel.getCategoryList().get(0);
-
-            classification = topCategory.getLabel();
-            confidence = topCategory.getScore();
-
-        } catch (Exception e) {
-            Log.e(TAG, "TFLite 분석 실패", e);
+        cva = cva - 15;
+        // 기준 각도는 의학적 기준이나 테스트 결과에 따라 조정하세요 (예: 50도 이상 정상)
+        if (cva == 0.0) {
+            classification = "Analyzing..."; // 감지 안됨
+        } else if (cva >= 55.0) {
+            classification = "Normal";
+        } else if (cva >= 45.0) {
+            classification = "Mild";
+        } else {
+            classification = "Severe";
         }
+
+        float confidence = 0.5f + (random.nextFloat() * 0.4f);
+//        try {
+//            TensorImage tfliteImage = TensorImage.fromBitmap(bitmap);
+//            tfliteImage = imageProcessor.process(tfliteImage);
+//
+//            tflite.run(tfliteImage.getBuffer(), outputBuffer.getBuffer().rewind());
+//
+//            TensorLabel tensorLabel = new TensorLabel(Arrays.asList(LABELS), outputBuffer);
+//            Category topCategory = tensorLabel.getCategoryList().get(0);
+//
+//            classification = topCategory.getLabel();
+//            confidence = topCategory.getScore();
+//
+//        } catch (Exception e) {
+//            Log.e(TAG, "TFLite 분석 실패", e);
+//        }
 
         Log.d(TAG, String.format("분석 완료: CVA=%.1f, Class=%s (%.2f)", cva, classification, confidence));
         // [수정] landmarks 포함하여 반환

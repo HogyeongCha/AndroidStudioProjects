@@ -1,33 +1,32 @@
 package com.hyu_tech_academic_fest_25.straightup;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.card.MaterialCardView;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
 public class FeedbackFragment extends Fragment {
 
     private FeedbackViewModel feedbackViewModel;
-    private DashboardViewModel dashboardViewModel;
-    private SettingsViewModel settingsViewModel; // 설정 확인용
+    private DashboardViewModel dashboardViewModel; // 최신 측정값 가져오기 용
 
     private TextView tvGeminiFeedback;
-
-    // Nano-Banana UI
-    private MaterialCardView cardNanoBanana;
-    private Button btnGenerateNanoBanana;
-    private ImageView ivNanoBanana;
-    private ProgressBar pbNanoBanana;
+    private LinearLayout layoutFeedbackHistory;
+    private ImageView ivStretchingPreview;
 
     @Nullable
     @Override
@@ -39,88 +38,86 @@ public class FeedbackFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // ViewModel 초기화 (Activity 범위로 공유하여 데이터 유지)
         feedbackViewModel = new ViewModelProvider(this).get(FeedbackViewModel.class);
+        // Activity 범위의 ViewModel을 사용하여 측정 데이터를 공유받음
         dashboardViewModel = new ViewModelProvider(requireActivity()).get(DashboardViewModel.class);
-        settingsViewModel = new ViewModelProvider(requireActivity()).get(SettingsViewModel.class);
 
-        // View Binding
         tvGeminiFeedback = view.findViewById(R.id.tvGeminiFeedback);
+        layoutFeedbackHistory = view.findViewById(R.id.layoutFeedbackHistory);
+        ivStretchingPreview = view.findViewById(R.id.ivStretchingPreview);
 
-        // Nano-Banana UI 초기화
-        cardNanoBanana = view.findViewById(R.id.cardNanoBanana);
-        btnGenerateNanoBanana = view.findViewById(R.id.btnGenerateNanoBanana);
-        ivNanoBanana = view.findViewById(R.id.ivNanoBanana);
-        pbNanoBanana = view.findViewById(R.id.pbNanoBanana);
+        // [설정] 스트레칭 이미지 (이미지가 있다면 설정, 없다면 기본값 유지)
+        ivStretchingPreview.setImageResource(R.drawable.img_neck_stretch);
 
-        setupNanoBanana();
-        observeViewModels();
+        // 1. 최신 측정 데이터를 확인하고 AI 코칭 트리거
+        dashboardViewModel.getCvaDisplayInfo().observe(getViewLifecycleOwner(), info -> {
+            if (info != null && !info.cvaText.equals("-")) {
+                // "53.2°" -> 53.2 파싱
+                double cva = 0.0;
+                try {
+                    cva = Double.parseDouble(info.cvaText.replace("°", ""));
+                } catch (NumberFormatException e) { e.printStackTrace(); }
 
-        // 초기 피드백 요청 (데이터가 있는 경우에만)
-        // 여기서는 간단히 테스트용 호출 (데이터가 없어도 동작 확인)
-        // 실제로는 DashboardViewModel에서 최신 데이터를 가져와야 함
-        // feedbackViewModel.generateCoachingFeedback(45.0f, "Mild");
-    }
+                // "거북목 (Severe)" -> "Severe" 파싱 (단순화)
+                String status = "Severe";
+                if (info.statusLabelText.contains("Normal") || info.statusLabelText.contains("좋은")) status = "Normal";
+                else if (info.statusLabelText.contains("Mild")) status = "Mild";
 
-    private void setupNanoBanana() {
-        btnGenerateNanoBanana.setOnClickListener(v -> {
-            if (CameraViewModel.lastCapturedBitmap == null) {
-                Toast.makeText(getContext(), "아직 캡처된 이미지가 없습니다. 모니터링 탭에서 측정을 먼저 진행해주세요.", Toast.LENGTH_LONG).show();
-                return;
+                // Gemini 호출 (단, 너무 잦은 호출 방지를 위해 Fragment 생성 시 1회성으로 제한하려면 플래그 필요)
+                // 여기서는 데이터가 변경될 때마다 호출되므로, 실제로는 변수에 저장해두고 onViewCreated에서 한 번만 호출하는 것이 좋습니다.
+                // 편의상 바로 호출합니다.
+                tvGeminiFeedback.setText("Gemini가 최신 데이터(" + info.cvaText + ")를 분석 중입니다...");
+                feedbackViewModel.generateCoachingFeedback(cva, status);
+            } else {
+                tvGeminiFeedback.setText("측정된 데이터가 없어 분석할 수 없습니다. 대시보드를 확인해주세요.");
             }
-
-            feedbackViewModel.generateNanoBananaSimulation();
-            pbNanoBanana.setVisibility(View.VISIBLE);
-            ivNanoBanana.setVisibility(View.GONE);
-            btnGenerateNanoBanana.setEnabled(false);
-            btnGenerateNanoBanana.setText("생성 중...");
         });
-    }
 
-    private void observeViewModels() {
-        // 1. AI 코칭 텍스트 관찰
+        // 2. Gemini 결과 관찰
         feedbackViewModel.getGeminiCoachingText().observe(getViewLifecycleOwner(), text -> {
-            if (text != null) {
-                tvGeminiFeedback.setText(text);
-            }
+            tvGeminiFeedback.setText(text);
         });
 
-        // 2. Nano-Banana 설정 확인 (설정에서 끄면 카드 숨김)
-        settingsViewModel.getIsNanoBananaEnabled().observe(getViewLifecycleOwner(), isEnabled -> {
-            if (isEnabled) {
-                cardNanoBanana.setVisibility(View.VISIBLE);
-            } else {
-                cardNanoBanana.setVisibility(View.GONE);
-            }
-        });
+        // 3. 과거 기록 관찰 및 UI 동적 생성
+        feedbackViewModel.getFeedbackHistory().observe(getViewLifecycleOwner(), this::updateHistoryList);
+    }
 
-        // 3. Nano-Banana 결과 (텍스트 묘사)
-        feedbackViewModel.getNanoBananaDescription().observe(getViewLifecycleOwner(), description -> {
-            // 텍스트 묘사는 Toast로 보여주거나 별도 뷰에 표시할 수 있음
-            if (description != null && !description.isEmpty()) {
-                // Toast.makeText(getContext(), description, Toast.LENGTH_LONG).show();
-            }
-        });
+    private void updateHistoryList(List<UserFeedback> list) {
+        layoutFeedbackHistory.removeAllViews();
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd HH:mm", Locale.getDefault());
 
-        // 4. Nano-Banana 결과 (교정된 이미지)
-        feedbackViewModel.getNanoBananaImage().observe(getViewLifecycleOwner(), bitmap -> {
-            pbNanoBanana.setVisibility(View.GONE);
-            btnGenerateNanoBanana.setEnabled(true);
-            btnGenerateNanoBanana.setText("다시 생성하기");
+        for (UserFeedback item : list) {
+            // 기록 아이템 뷰 생성 (CardView로 감싸서 예쁘게)
+            MaterialCardView card = new MaterialCardView(requireContext());
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            params.setMargins(0, 0, 0, 16);
+            card.setLayoutParams(params);
+            card.setCardBackgroundColor(Color.WHITE);
+            card.setRadius(12f);
+            card.setCardElevation(1f);
 
-            if (bitmap != null) {
-                ivNanoBanana.setVisibility(View.VISIBLE);
-                ivNanoBanana.setImageBitmap(bitmap); // 생성된 비트맵 설정!
-                Toast.makeText(getContext(), "자세 교정 시뮬레이션이 완료되었습니다!", Toast.LENGTH_SHORT).show();
-            } else {
-                // 이미지가 null인 경우 (캡처된 원본이 없거나 오류 발생)
-                // Toast.makeText(getContext(), "이미지 생성 실패", Toast.LENGTH_SHORT).show();
-            }
-        });
+            LinearLayout innerLayout = new LinearLayout(requireContext());
+            innerLayout.setOrientation(LinearLayout.VERTICAL);
+            innerLayout.setPadding(32, 24, 32, 24);
 
-        // 5. 로딩 상태 관찰 (공통)
-        feedbackViewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
-            // 필요한 경우 전체 화면 로딩 표시 등을 처리
-        });
+            // 날짜
+            TextView tvDate = new TextView(requireContext());
+            tvDate.setText(sdf.format(new Date(item.getTimestamp())));
+            tvDate.setTextSize(12);
+            tvDate.setTextColor(Color.GRAY);
+            innerLayout.addView(tvDate);
+
+            // 내용
+            TextView tvContent = new TextView(requireContext());
+            tvContent.setText(item.getFeedbackText());
+            tvContent.setTextSize(14);
+            tvContent.setTextColor(Color.DKGRAY);
+            tvContent.setPadding(0, 8, 0, 0);
+            innerLayout.addView(tvContent);
+
+            card.addView(innerLayout);
+            layoutFeedbackHistory.addView(card);
+        }
     }
 }

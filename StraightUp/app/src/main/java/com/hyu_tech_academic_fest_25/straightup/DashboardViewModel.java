@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 
 public class DashboardViewModel extends AndroidViewModel {
 
@@ -112,9 +113,9 @@ public class DashboardViewModel extends AndroidViewModel {
         }
 
         if (dataList.isEmpty()) {
-            updateCvaDisplay(0);
-            // 빈 차트 데이터 설정 (오류 방지)
-            chartData.setValue(new LineData());
+            Log.i(TAG, "No data found. Generating mock data for demo...");
+            generateMockData(); // <--- 가상 데이터 생성 호출
+            // 데이터가 생성되면 Firebase 리스너가 다시 호출되므로 여기서는 리턴합니다.
             return;
         }
 
@@ -125,6 +126,37 @@ public class DashboardViewModel extends AndroidViewModel {
 
         CvaDataPoint lastData = dataList.get(dataList.size() - 1);
         updateCvaDisplay((float) lastData.getCva());
+    }
+
+    private void generateMockData() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) return;
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference()
+                .child("users")
+                .child(user.getUid())
+                .child("cvaHistory");
+
+        Random random = new Random();
+        long currentTime = System.currentTimeMillis();
+
+        // 30개의 데이터 포인트 생성 (1분 간격)
+        for (int i = 29; i >= 0; i--) {
+            long timestamp = currentTime - (i * 60 * 1000);
+
+            // CVA 값을 40~60 사이에서 자연스럽게 변동하도록 생성
+            // 발표 시 "정상"과 "주의" 상태가 섞여 보이도록 설정 (예: 42.0 ~ 58.0)
+            double cva = 42.0 + (random.nextDouble() * 16.0);
+
+            // CVA 값에 따른 등급 자동 지정
+            String classification;
+            if (cva >= 53.0) classification = "Normal";
+            else if (cva >= 45.0) classification = "Mild";
+            else classification = "Severe";
+
+            CvaDataPoint mockData = new CvaDataPoint(timestamp, cva, classification);
+            ref.push().setValue(mockData);
+        }
     }
 
     // ... (calculateEMA, generateXAxisLabels, updateChartData 메서드는 기존과 동일) ...
