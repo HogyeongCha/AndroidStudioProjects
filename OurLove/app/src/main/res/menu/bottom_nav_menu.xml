@@ -14,7 +14,7 @@
 
     <item
         android:id="@+id/navigation_play"
-        android:icon="@android:drawable/ic_menu_preferences"
+        android:icon="@android:drawable/ic_media_play"
         android:title="같이 놀기"
         app:showAsAction="ifRoom"/>
 

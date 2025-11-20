@@ -2,6 +2,7 @@ package com.hyunji.ourlove;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,6 +43,10 @@ public class HomeFragment extends Fragment {
     private TextView tvWeatherIcon;
     private TextView tvWeatherTemp;
     private TextView tvWeatherComment;
+    private ImageView ivSettings;
+
+    private TextView tvDdayCount;
+    private TextView tvAnniversaryInfo;
 
     private OkHttpClient httpClient;
 
@@ -50,55 +56,22 @@ public class HomeFragment extends Fragment {
         httpClient = new OkHttpClient();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        // 프래그먼트가 다시 활성화될 때 D-DAY를 새로고침 (날짜 변경이 있을 수 있으므로)
+        updateDDayInfo();
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        // D-DAY 계산 및 업데이트
-        TextView tvDdayCount = view.findViewById(R.id.tv_dday_count);
-        TextView tvAnniversaryInfo = view.findViewById(R.id.tv_anniversary_info);
-
-        // SharedPreferences에서 만난 날짜 불러오기
-        LocalDate startDate;
-        if (getContext() != null) {
-            SharedPreferences prefs = getContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-            String savedStartDateStr = prefs.getString(KEY_START_DATE, null);
-
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                if (savedStartDateStr != null) {
-                    try {
-                        startDate = LocalDate.parse(savedStartDateStr);
-                    } catch (DateTimeParseException e) {
-                        e.printStackTrace();
-                        startDate = LocalDate.now(); // 파싱 오류 시 오늘 날짜
-                    }
-                } else {
-                    startDate = LocalDate.now(); // 저장된 날짜가 없으면 오늘 날짜
-                }
-            } else {
-                startDate = LocalDate.now(); // API 26 미만에서는 LocalDate 사용 불가, 임시
-            }
-        } else {
-            startDate = LocalDate.now(); // Context가 null이면 오늘 날짜
-        }
-
-
-        LocalDate today = LocalDate.now();
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            long dDay = ChronoUnit.DAYS.between(startDate, today) + 1; // 시작일 포함
-            tvDdayCount.setText(dDay + "일째");
-
-            long nextAnniversaryDays = ((dDay / 100) + 1) * 100;
-            long daysUntilNextAnniversary = nextAnniversaryDays - dDay;
-            tvAnniversaryInfo.setText("❤️ " + nextAnniversaryDays + "일까지 D-" + daysUntilNextAnniversary);
-
-        } else {
-            tvDdayCount.setText("D-DAY");
-            tvAnniversaryInfo.setText("기념일 정보");
-            Toast.makeText(getContext(), "안드로이드 버전이 낮아 D-DAY 기능이 제한됩니다.", Toast.LENGTH_LONG).show();
-        }
+        // D-DAY 관련 TextView 초기화
+        tvDdayCount = view.findViewById(R.id.tv_dday_count);
+        tvAnniversaryInfo = view.findViewById(R.id.tv_anniversary_info);
+        updateDDayInfo(); // D-DAY 정보 업데이트 호출
 
         // 내 상태 변경 기능 (기존 코드)
         tvMyStatus = view.findViewById(R.id.tv_my_status);
@@ -114,11 +87,58 @@ public class HomeFragment extends Fragment {
         tvWeatherIcon = view.findViewById(R.id.tv_weather_icon);
         tvWeatherTemp = view.findViewById(R.id.tv_weather_temp);
         tvWeatherComment = view.findViewById(R.id.tv_weather_comment);
-
         fetchWeatherData(); // 날씨 데이터 가져오기
+
+        // 설정 아이콘 클릭 리스너 (새로 추가)
+        ivSettings = view.findViewById(R.id.iv_settings);
+        if (ivSettings != null) {
+            ivSettings.setOnClickListener(v -> {
+                Intent intent = new Intent(getActivity(), SettingsActivity.class);
+                startActivity(intent);
+            });
+        }
 
         return view;
     }
+
+    // D-DAY 정보를 업데이트하는 별도의 메서드
+    private void updateDDayInfo() {
+        if (getContext() == null || tvDdayCount == null || tvAnniversaryInfo == null) return;
+
+        LocalDate startDate;
+        SharedPreferences prefs = getContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        String savedStartDateStr = prefs.getString(KEY_START_DATE, null);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            if (savedStartDateStr != null) {
+                try {
+                    startDate = LocalDate.parse(savedStartDateStr);
+                } catch (DateTimeParseException e) {
+                    e.printStackTrace();
+                    startDate = LocalDate.now(); // 파싱 오류 시 오늘 날짜
+                }
+            } else {
+                startDate = LocalDate.now(); // 저장된 날짜가 없으면 오늘 날짜
+            }
+        } else {
+            startDate = LocalDate.now(); // API 26 미만에서는 LocalDate 사용 불가, 임시
+        }
+
+        LocalDate today = LocalDate.now();
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            long dDay = ChronoUnit.DAYS.between(startDate, today) + 1; // 시작일 포함
+            tvDdayCount.setText(dDay + "일째");
+
+            long nextAnniversaryDays = ((dDay / 100) + 1) * 100;
+            long daysUntilNextAnniversary = nextAnniversaryDays - dDay;
+            tvAnniversaryInfo.setText("❤️ " + nextAnniversaryDays + "일까지 D-" + daysUntilNextAnniversary);
+        } else {
+            tvDdayCount.setText("D-DAY");
+            tvAnniversaryInfo.setText("기념일 정보");
+        }
+    }
+
 
     private void loadMyStatus() {
         if (getContext() != null) {

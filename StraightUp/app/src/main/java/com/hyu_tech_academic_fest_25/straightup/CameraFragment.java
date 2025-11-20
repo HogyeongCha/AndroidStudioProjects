@@ -18,6 +18,8 @@ import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+// [Phase 1 추가] ViewModelProvider import
+import androidx.lifecycle.ViewModelProvider;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -26,6 +28,9 @@ public class CameraFragment extends Fragment {
 
     private static final String TAG = "CameraFragment";
     private static final String[] REQUIRED_PERMISSIONS = {Manifest.permission.CAMERA};
+
+    // [Phase 1 추가] ViewModel 선언
+    private CameraViewModel cameraViewModel;
 
     private PreviewView previewView;
     private ExecutorService cameraExecutor;
@@ -52,6 +57,10 @@ public class CameraFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        // [Phase 1 추가] ViewModel 초기화
+        cameraViewModel = new ViewModelProvider(this).get(CameraViewModel.class);
+
         previewView = view.findViewById(R.id.previewView);
 
         // 카메라 작업을 위한 백그라운드 스레드
@@ -63,6 +72,11 @@ public class CameraFragment extends Fragment {
         } else {
             requestCameraPermission();
         }
+
+        // [Phase 1 추가] ViewModel 관찰 (Phase 2에서 구현)
+        // cameraViewModel.getTtsAlert().observe(getViewLifecycleOwner(), alertText -> {
+        //     // TTS 또는 Toast 알림 로직
+        // });
     }
 
     private boolean allPermissionsGranted() {
@@ -94,12 +108,13 @@ public class CameraFragment extends Fragment {
                         .requireLensFacing(CameraSelector.LENS_FACING_FRONT)
                         .build();
 
-                // (보고서 내용) 3. ImageAnalysis UseCase 설정 (MediaPipe/TFLite용)
+                // (보고서 내용) 3. ImageAnalysis UseCase 설정 (Phase 2에서 구현)
                 // ImageAnalysis imageAnalysis = new ImageAnalysis.Builder()
                 //         .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 //         .build();
                 // imageAnalysis.setAnalyzer(cameraExecutor, image -> {
-                //     // 여기에 MediaPipe 또는 TFLite 분석 코드 구현
+                //     // [Phase 2] ViewModel으로 이미지 전달
+                //     cameraViewModel.processImage(image);
                 //     image.close();
                 // });
 
@@ -107,7 +122,7 @@ public class CameraFragment extends Fragment {
                 cameraProvider.unbindAll();
 
                 // UseCase를 라이프사이클에 바인딩
-                // (imageAnalysis를 추가하려면 preview 뒤에 콤마로 추가)
+                // (Phase 2에서 imageAnalysis를 콤마로 추가)
                 cameraProvider.bindToLifecycle(
                         this, // Fragment의 ViewLifecycleOwner
                         cameraSelector,

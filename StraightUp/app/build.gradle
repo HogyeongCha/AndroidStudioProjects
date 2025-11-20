@@ -1,5 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
+    // 1. Firebase 사용을 위한 Google Services 플러그인 추가
+    // [수정] 플러그인 ID와 함께 버전을 명시해줍니다.
+    id 'com.google.gms.google-services' version '4.4.2'
 }
 
 android {
@@ -50,4 +53,15 @@ dependencies {
     // --- Navigation (버전 수정) ---
     implementation 'androidx.navigation:navigation-fragment:2.7.7'
     implementation 'androidx.navigation:navigation-ui:2.7.7'
+
+    // --- [Phase 1 추가] MVVM (ViewModel) ---
+    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.7.0'
+
+    // --- [Phase 1 추가] Firebase (BOM 및 인증/DB) ---
+    // Firebase Bill of Materials (BOM) - 버전 관리를 BOM에 위임
+    implementation platform('com.google.firebase:firebase-bom:33.1.2')
+    // Firebase Authentication (익명 인증용)
+    implementation 'com.google.firebase:firebase-auth'
+    // Firebase Realtime Database (보고서 10페이지)
+    implementation 'com.google.firebase:firebase-database'
 }

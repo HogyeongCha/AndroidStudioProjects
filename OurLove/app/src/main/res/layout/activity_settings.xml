@@ -105,19 +105,32 @@
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
+    <!-- 커플 연결 끊기 버튼 -->
+    <Button
+        android:id="@+id/btn_disconnect_couple"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="커플 연결 끊기"
+        android:backgroundTint="@color/red_500"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toTopOf="@id/btn_logout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/card_notification" />
+
     <!-- 로그아웃 버튼 -->
     <Button
         android:id="@+id/btn_logout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         android:text="로그아웃"
         android:backgroundTint="@color/gray_400"
         android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/card_notification"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintTop_toBottomOf="@id/btn_disconnect_couple" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
