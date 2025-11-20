@@ -12,14 +12,18 @@ public class CvaDisplayInfo {
     public final int cvaValueColor;
     public final int statusCircleBgColor; // Color Int (resolved)
     public final int statusTextColor; // Color Int (resolved)
+    public final double diff; // [추가] EMA 변화량 필드
 
+    // [수정] diff 파라미터 추가
     public CvaDisplayInfo(String cvaText, String statusText, String statusLabelText,
-                          int cvaValueColor, int statusCircleBgColor, int statusTextColor) {
+                          int cvaValueColor, int statusCircleBgColor, int statusTextColor,
+                          double diff) {
         this.cvaText = cvaText;
         this.statusText = statusText;
         this.statusLabelText = statusLabelText;
         this.cvaValueColor = cvaValueColor;
         this.statusCircleBgColor = statusCircleBgColor;
         this.statusTextColor = statusTextColor;
+        this.diff = diff; // 필드 초기화
     }
 }

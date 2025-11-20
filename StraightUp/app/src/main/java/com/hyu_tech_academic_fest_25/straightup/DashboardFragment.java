@@ -1,6 +1,6 @@
 package com.hyu_tech_academic_fest_25.straightup;
 
-import android.content.res.ColorStateList; // [수정] import 추가
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -41,7 +41,7 @@ public class DashboardFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // ViewModel 초기화
+        // ViewModel 초기화 (Activity 범위 공유)
         dashboardViewModel = new ViewModelProvider(requireActivity()).get(DashboardViewModel.class);
 
         // 뷰 초기화
@@ -81,7 +81,7 @@ public class DashboardFragment extends Fragment {
             }
         });
 
-        // 3. CVA 상태 카드 UI 정보 관찰
+        // 3. CVA 상태 카드 UI 정보 관찰 (ViewModel에서 계산된 EMA/Diff 정보 수신)
         dashboardViewModel.getCvaDisplayInfo().observe(getViewLifecycleOwner(), info -> {
             if (info != null) {
                 updateCvaDisplayUI(info);
@@ -100,8 +100,10 @@ public class DashboardFragment extends Fragment {
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
 
-        lineChart.getAxisLeft().setAxisMinimum(40f);
-        lineChart.getAxisLeft().setAxisMaximum(60f);
+        // [수정 완료: Task 3] Y축 범위 확장 (40~60 -> 30~70)
+        lineChart.getAxisLeft().setAxisMinimum(30f);
+        lineChart.getAxisLeft().setAxisMaximum(70f);
+
         lineChart.getAxisRight().setEnabled(false);
         lineChart.getLegend().setEnabled(true);
     }
@@ -132,11 +134,9 @@ public class DashboardFragment extends Fragment {
      */
     private void updateCvaDisplayUI(CvaDisplayInfo info) {
         tvCvaValue.setText(info.cvaText);
-        tvCvaValue.setTextColor(info.cvaValueColor); // 이건 원래 Color Int를 받으므로 정상
+        tvCvaValue.setTextColor(info.cvaValueColor);
 
-        // [수정 핵심] info.statusCircleBgColor는 이미 '색상값(Int)'입니다.
-        // ContextCompat.getColorStateList는 '리소스 ID'를 원하므로 여기서 에러가 났습니다.
-        // ColorStateList.valueOf()를 사용하여 색상값으로 바로 StateList를 만듭니다.
+        // [확인 완료: Task 3] ColorStateList.valueOf()를 사용하여 색상값으로 바로 StateList 생성
         tvStatusCircle.setBackgroundTintList(ColorStateList.valueOf(info.statusCircleBgColor));
 
         tvStatusCircle.setTextColor(info.statusTextColor);
@@ -144,5 +144,7 @@ public class DashboardFragment extends Fragment {
 
         tvStatusLabel.setText(info.statusLabelText);
         tvStatusLabel.setTextColor(ContextCompat.getColor(getContext(), android.R.color.darker_gray));
+
+        // 참고: info.diff는 FeedbackFragment에서 사용하므로 여기서는 사용하지 않습니다.
     }
 }

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "990454556958",
+    "project_id": "straightup-fb15e",
+    "storage_bucket": "straightup-fb15e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:990454556958:android:f56582b676f39a8a6d410f",
+        "android_client_info": {
+          "package_name": "com.hyu_tech_academic_fest_25.straightup"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBsTt_VD-sLCEPiu6cEMwKJFydyTWkJ3TA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

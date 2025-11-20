@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "660980176166",
+    "project_id": "ourloveapp-52b29",
+    "storage_bucket": "ourloveapp-52b29.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:660980176166:android:311836044564c210485de7",
+        "android_client_info": {
+          "package_name": "com.hyunji.ourlove"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhxer4Iu7BflJKpKCP650edU0D-V3zYFc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

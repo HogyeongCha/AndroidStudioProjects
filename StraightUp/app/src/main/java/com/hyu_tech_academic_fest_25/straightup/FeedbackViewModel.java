@@ -40,11 +40,11 @@ public class FeedbackViewModel extends AndroidViewModel {
      * [수정] 실제 AI 호출 대신, 미리 준비된 문장을 반환하는 "가짜(Mock)" 메서드
      * 1.5초 딜레이를 주어 실제 분석하는 듯한 느낌을 줍니다.
      */
-    public void generateCoachingFeedback(double cva, String classification) {
+    public void generateCoachingFeedback(double cva, String classification, double diff) {
         // 로딩 중 메시지는 Fragment에서 이미 설정했으므로, 여기선 결과만 주면 됨
 
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            String fakeAiResponse = getPredefinedMessage(cva, classification);
+            String fakeAiResponse = getPredefinedMessage(cva, classification, diff);
             geminiCoachingText.setValue(fakeAiResponse);
 
             // 기록 저장은 동일하게 수행 (발표 시 기록이 쌓이는 것을 보여주기 위함)
@@ -55,10 +55,11 @@ public class FeedbackViewModel extends AndroidViewModel {
     /**
      * 상태별 미리 준비된 "AI스러운" 멘트 생성기
      */
-    private String getPredefinedMessage(double cva, String classification) {
+    private String getPredefinedMessage(double cva, String classification, double diff) {
         Random random = new Random();
         String[] messages;
 
+        // 1. 상태별 메시지 후보군 설정
         switch (classification) {
             case "Normal":
                 messages = new String[] {
@@ -84,8 +85,23 @@ public class FeedbackViewModel extends AndroidViewModel {
                 break;
         }
 
-        // 랜덤으로 하나 선택해서 매번 조금 다른 척 함
-        return messages[random.nextInt(messages.length)];
+        // 2. 후보군 중 하나 랜덤 선택 (작성하신 코드에서 이 부분이 빠져있었어요!)
+        String baseMessage = messages[random.nextInt(messages.length)];
+
+        // 3. 변화량(diff)에 따른 추세 코멘트 생성
+        String trendMessage = "";
+        // 변화량이 0일 때(초기값 등)는 굳이 메시지를 띄우지 않으려면 조건을 좀 더 타이트하게 잡을 수도 있습니다.
+        if (diff >= 0.5) {
+            trendMessage = "\n(지난번보다 자세가 좋아지고 있어요! 👍)";
+        } else if (diff <= -0.5) {
+            trendMessage = "\n(주의: 지난번보다 목 각도가 안 좋아졌습니다. 자세를 고쳐주세요. ⚠️)";
+        } else {
+            // 변화가 거의 없을 때 (선택사항: 너무 자주 뜨면 귀찮을 수 있으니 빈 문자열로 두셔도 됩니다)
+            trendMessage = "";
+        }
+
+        // 4. 최종 합치기
+        return baseMessage + trendMessage;
     }
 
     private void saveFeedbackToFirebase(String text) {

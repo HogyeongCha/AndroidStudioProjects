@@ -28,6 +28,18 @@ public class FeedbackFragment extends Fragment {
     private LinearLayout layoutFeedbackHistory;
     private ImageView ivStretchingPreview;
 
+    private final int[] IMAGES_GOOD_STATUS = {
+            R.drawable.img_stretch_good_1, // 파일명에 맞게 수정하세요
+            R.drawable.img_stretch_good_2
+    };
+
+    private final int[] IMAGES_BAD_STATUS = {
+            R.drawable.img_stretch_bad_1,  // 파일명에 맞게 수정하세요
+            R.drawable.img_stretch_bad_2
+    };
+
+    private final java.util.Random random = new java.util.Random();
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -46,30 +58,29 @@ public class FeedbackFragment extends Fragment {
         layoutFeedbackHistory = view.findViewById(R.id.layoutFeedbackHistory);
         ivStretchingPreview = view.findViewById(R.id.ivStretchingPreview);
 
-        // [설정] 스트레칭 이미지 (이미지가 있다면 설정, 없다면 기본값 유지)
-        ivStretchingPreview.setImageResource(R.drawable.img_neck_stretch);
-
-        // 1. 최신 측정 데이터를 확인하고 AI 코칭 트리거
+        // ViewModel 관찰
         dashboardViewModel.getCvaDisplayInfo().observe(getViewLifecycleOwner(), info -> {
             if (info != null && !info.cvaText.equals("-")) {
-                // "53.2°" -> 53.2 파싱
-                double cva = 0.0;
-                try {
-                    cva = Double.parseDouble(info.cvaText.replace("°", ""));
-                } catch (NumberFormatException e) { e.printStackTrace(); }
-
-                // "거북목 (Severe)" -> "Severe" 파싱 (단순화)
+                // 1. 상태 파싱 ("거북목 (Severe)" -> "Severe")
                 String status = "Severe";
                 if (info.statusLabelText.contains("Normal") || info.statusLabelText.contains("좋은")) status = "Normal";
                 else if (info.statusLabelText.contains("Mild")) status = "Mild";
 
-                // Gemini 호출 (단, 너무 잦은 호출 방지를 위해 Fragment 생성 시 1회성으로 제한하려면 플래그 필요)
-                // 여기서는 데이터가 변경될 때마다 호출되므로, 실제로는 변수에 저장해두고 onViewCreated에서 한 번만 호출하는 것이 좋습니다.
-                // 편의상 바로 호출합니다.
-                tvGeminiFeedback.setText("Gemini가 최신 데이터(" + info.cvaText + ")를 분석 중입니다...");
-                feedbackViewModel.generateCoachingFeedback(cva, status);
-            } else {
-                tvGeminiFeedback.setText("측정된 데이터가 없어 분석할 수 없습니다. 대시보드를 확인해주세요.");
+                // 2. CVA 값 파싱
+                double cva = 0.0;
+                try { cva = Double.parseDouble(info.cvaText.replace("°", "")); }
+                catch (Exception e) {}
+
+                // -------------------------------------------------------
+                // [통합] 뷰모델이 다 계산해준 값들을 그대로 사용
+                // -------------------------------------------------------
+
+                // (1) 이미지 업데이트 (1번 과제)
+                updateStretchingGuide(status);
+
+                // (2) 피드백 생성 (2번 과제 - info.diff 사용)
+                tvGeminiFeedback.setText("Gemini가 분석 중입니다... (변화량: " + String.format("%.1f", info.diff) + ")");
+                feedbackViewModel.generateCoachingFeedback(cva, status, info.diff);
             }
         });
 
@@ -118,6 +129,30 @@ public class FeedbackFragment extends Fragment {
 
             card.addView(innerLayout);
             layoutFeedbackHistory.addView(card);
+        }
+    }
+    /**
+     * [추가] 현재 목 상태(Normal/Mild/Severe)에 따라
+     * 적절한 스트레칭 이미지를 랜덤하게 선택하여 보여주는 메서드
+     */
+    private void updateStretchingGuide(String status) {
+        int[] targetArray;
+
+        // 1. 상태에 따라 사용할 이미지 배열 선택
+        if ("Normal".equals(status) || "좋은 자세".equals(status)) {
+            targetArray = IMAGES_GOOD_STATUS;
+        } else {
+            // Mild, Severe 등 거북목 의심 증상이 있을 때
+            targetArray = IMAGES_BAD_STATUS;
+        }
+
+        // 2. 배열이 비어있지 않다면 랜덤하게 하나 뽑기
+        if (targetArray.length > 0) {
+            int randomIndex = random.nextInt(targetArray.length);
+            int selectedImageResId = targetArray[randomIndex];
+
+            // 3. 이미지 뷰에 적용
+            ivStretchingPreview.setImageResource(selectedImageResId);
         }
     }
 }
